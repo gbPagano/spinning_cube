@@ -1,13 +1,13 @@
 use terminal_size::{Width, Height, terminal_size};
-use std::process::abort;
-use std::thread;
+use std::{process, thread};
 use std::time::Duration;
+
 
 fn main() {
     
     let Some((Width(term_width), Height(mut term_height))) = terminal_size() else {
         println!("unable to get terminal size");
-        abort()
+        process::abort()
     };
     assert!(term_height > 10, "terminal height too low, needs to be at least 10 chars");
     assert!(term_width >= term_height, "terminal width must be at least equal to height");
@@ -18,9 +18,8 @@ fn main() {
     thread::sleep(Duration::from_millis(360));
     
     clean_cube(term_height);
-    
-
 }
+
 
 fn clean_cube(height: u16) {
     for _ in 0..height { 
@@ -28,6 +27,7 @@ fn clean_cube(height: u16) {
         print!("\x1B[A\x1B[K");
     }
 }
+
 
 fn print_cube(matrix: &Vec<Vec<char>>) {
     for row in matrix {
