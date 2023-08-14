@@ -13,26 +13,27 @@ fn main() {
     assert!(term_width >= term_height, "terminal width must be at least equal to height");
     term_height -= 9;
     
-    let mut a = 0_f64.to_radians(); 
+    let mut a: f64 = 0.0; 
     loop {
         let mut background: Vec<Vec<char>> = vec![vec!['.'; term_width.into()]; term_height.into()];
-        
-        for x in -4_i8..=3 {
-            for y in -9_i8..=9 {
+       
+        let cube_size: i8 = 8;
+        for x in -cube_size..=cube_size {
+            for y in -cube_size..=cube_size {
                 let x1 = x as f64 * a.cos() - y as f64 * a.sin();
                 let y2 = x as f64 * a.sin() + y as f64 * a.cos();
                 
                 // println!("{x}, {y}");
                 // println!("{x1}, {y2}");
 
-                let idx_x = (x1.round() + 6.0) as usize;
+                let idx_x = ((x1 / 2.0).round() + 9.0) as usize;
                 let idx_y = (y2.round() + 19.0) as usize;
                 background[idx_x][idx_y] = '#';
             }
         }
-        a += 45_f64.to_radians();
+        a += 0.05;
         print_cube(&background);
-        thread::sleep(Duration::from_millis(360));
+        thread::sleep(Duration::from_millis(100));
     
         clean_terminal(term_height);
     }
