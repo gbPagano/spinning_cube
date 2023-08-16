@@ -25,6 +25,7 @@ fn main() {
             for y in -cube_size..=cube_size {
                 
                 let z = cube_size;
+                let (x2, y2) = (x, y);
 
                 let (x, y, z) = rotate_yaw(x.into(), y.into(), z.into(), a);
                 let (x, y, z) = rotate_roll(x.into(), y.into(), z.into(), b);
@@ -41,7 +42,7 @@ fn main() {
 
                 let z = -cube_size;
 
-                let (x, y, z) = rotate_yaw(x.into(), y.into(), z.into(), a);
+                let (x, y, z) = rotate_yaw(x2.into(), y2.into(), z.into(), a);
                 let (x, y, z) = rotate_roll(x.into(), y.into(), z.into(), b);
                 let (x, y, z) = rotate_pitch(x.into(), y.into(), z.into(), c);
 
