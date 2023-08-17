@@ -22,7 +22,7 @@ fn main() {
         let mut background: Vec<Vec<char>> = vec![vec![' '; term_width.into()]; term_height.into()];
         let mut z_buffer: Vec<Vec<f64>> = vec![vec![-1000.0; term_width.into()]; term_height.into()];
        
-        let cube_size: i8 = 20;
+        let cube_size: i8 = 40;
         for x in -cube_size..=cube_size {
             for y in -cube_size..=cube_size {
                 let z = cube_size;
@@ -47,13 +47,23 @@ fn main() {
                     z_buffer[idx_x][idx_y] = new_z;
                     background[idx_x][idx_y] = ';';
                 } 
+                let (idx_x, idx_y, new_z) = rotate_axis(x, z, -y, a, b, c);
+                if idx_x < 36 && idx_y < 170 && z_buffer[idx_x][idx_y] <= new_z {
+                    z_buffer[idx_x][idx_y] = new_z;
+                    background[idx_x][idx_y] = '@';
+                }
+                let (idx_x, idx_y, new_z) = rotate_axis(x, -z, y, a, b, c);
+                if idx_x < 36 && idx_y < 170 && z_buffer[idx_x][idx_y] <= new_z {
+                    z_buffer[idx_x][idx_y] = new_z;
+                    background[idx_x][idx_y] = '+';
+                }
             }
         }
         a += 0.05;
-        b += 0.03;
+        b += 0.05;
         c += 0.01;
         print_cube(&background);
-        thread::sleep(Duration::from_millis(100));
+        thread::sleep(Duration::from_millis(80));
     
         clean_terminal(term_height);
     }
@@ -67,7 +77,12 @@ fn rotate_axis(x: i8, y: i8, z: i8, yaw: f64, pitch: f64, roll: f64) -> (usize, 
 
     // let idx_x = (((x + 1.0) / 2.2).round() + 9.0) as usize;
     // println!("coords: {x},{y},{z}");
-    let ooz: f64 = 1.0 / (16.0 - z); 
+    let distance: f64 = 100.0;
+    let cube_size: f64 = 40.0;
+    let ooz: f64 = (1.0 / (distance - (z / cube_size))) * cube_size;
+    // let distance: f64 = 110.0;
+    // let ooz: f64 = (cube_size / (distance - z)); 
+
     // let ooz: f64 = 1.0;
     // println!("ooz: {ooz}");
     // println!("ooz*x: {}", ooz * x);
@@ -75,9 +90,9 @@ fn rotate_axis(x: i8, y: i8, z: i8, yaw: f64, pitch: f64, roll: f64) -> (usize, 
     
 
 
-    let idx_x = (x / 2.0 + 18.0).round() as usize;
-    let idx_y = (y + 96.0).round() as usize;
-    (idx_x, idx_y, ooz)
+    let idx_x = ((ooz * x).round() / 2.0 + 18.0) as usize;
+    let idx_y = ((ooz * y).round() + 86.0) as usize;
+    (idx_x, idx_y, z)
 }
 
 
