@@ -12,7 +12,7 @@ fn main() {
     assert!(term_height > 10, "terminal height too low, needs to be at least 10 chars");
     assert!(term_width >= term_height, "terminal width must be at least equal to height");
     // term_height -= 9;
-    println!("{term_height}, {term_width}");
+    // println!("{term_height}, {term_width}");
 
     let mut a: f64 = 0.0;
     let mut b: f64 = 0.0;
@@ -77,13 +77,13 @@ fn rotate_axis(x: i8, y: i8, z: i8, yaw: f64, pitch: f64, roll: f64) -> (usize, 
 
     // let idx_x = (((x + 1.0) / 2.2).round() + 9.0) as usize;
     // println!("coords: {x},{y},{z}");
-    let distance: f64 = 100.0;
+    let distance: f64 = 150.0;
     let cube_size: f64 = 40.0;
-    let ooz: f64 = (1.0 / (distance - (z / cube_size))) * cube_size;
-    // let distance: f64 = 110.0;
-    // let ooz: f64 = (cube_size / (distance - z)); 
+    // let ooz: f64 = (1.0 / (distance - (z / cube_size))) * cube_size;
+    // let distance: f64 = 150.0;
+    let ooz: f64 = (cube_size / (distance - z)) * 1.5; 
 
-    // let ooz: f64 = 1.0;
+    // let ooz: f64 = 0.5;
     // println!("ooz: {ooz}");
     // println!("ooz*x: {}", ooz * x);
     
