@@ -11,33 +11,47 @@ fn main() {
     };
     assert!(term_height > 10, "terminal height too low, needs to be at least 10 chars");
     assert!(term_width >= term_height, "terminal width must be at least equal to height");
-    term_height -= 9;
-    
+    // term_height -= 9;
+    println!("{term_height}, {term_width}");
+
     let mut a: f64 = 0.0;
     let mut b: f64 = 0.0;
     let mut c: f64 = 0.0;
     // let a = 45.0_f64.to_radians();
     loop {
-        let mut background: Vec<Vec<char>> = vec![vec!['.'; term_width.into()]; term_height.into()];
+        let mut background: Vec<Vec<char>> = vec![vec![' '; term_width.into()]; term_height.into()];
+        let mut z_buffer: Vec<Vec<f64>> = vec![vec![-1000.0; term_width.into()]; term_height.into()];
        
-        let cube_size: i8 = 8;
+        let cube_size: i8 = 20;
         for x in -cube_size..=cube_size {
             for y in -cube_size..=cube_size {
                 let z = cube_size;
                 
-                let (idx_x, idx_y) = rotate_axis(x, y, z, a, b, c);
-                background[idx_x][idx_y] = '#';
-
-                let (idx_x, idx_y) = rotate_axis(x, y, -z, a, b, c);
-                background[idx_x][idx_y] = '$';
-
-                let (idx_x, idx_y) = rotate_axis(z, y, -x, a, b, c);
-                background[idx_x][idx_y] = '~';
+                let (idx_x, idx_y, new_z) = rotate_axis(x, y, z, a, b, c);
+                if idx_x < 36 && idx_y < 170 && z_buffer[idx_x][idx_y] <= new_z {
+                    z_buffer[idx_x][idx_y] = new_z;
+                    background[idx_x][idx_y] = '#';
+                }
+                let (idx_x, idx_y, new_z) = rotate_axis(-z, y, x, a, b, c);
+                if idx_x < 36 && idx_y < 170 && z_buffer[idx_x][idx_y] <= new_z {
+                    z_buffer[idx_x][idx_y] = new_z;
+                    background[idx_x][idx_y] = '$';
+                } 
+                let (idx_x, idx_y, new_z) = rotate_axis(z, y, -x, a, b, c);
+                if idx_x < 36 && idx_y < 170 && z_buffer[idx_x][idx_y] <= new_z {
+                    z_buffer[idx_x][idx_y] = new_z;
+                    background[idx_x][idx_y] = '~';
+                } 
+                let (idx_x, idx_y, new_z) = rotate_axis(-x, y, -z, a, b, c);
+                if idx_x < 36 && idx_y < 170 && z_buffer[idx_x][idx_y] <= new_z {
+                    z_buffer[idx_x][idx_y] = new_z;
+                    background[idx_x][idx_y] = ';';
+                } 
             }
         }
-        a += 0.03;
+        a += 0.05;
         b += 0.03;
-        c += 0.02;
+        c += 0.01;
         print_cube(&background);
         thread::sleep(Duration::from_millis(100));
     
@@ -45,16 +59,25 @@ fn main() {
     }
 }
 
-fn rotate_axis(x: i8, y: i8, z: i8, yaw: f64, pitch: f64, roll: f64) -> (usize, usize) {
+fn rotate_axis(x: i8, y: i8, z: i8, yaw: f64, pitch: f64, roll: f64) -> (usize, usize, f64) {
 
     let (x, y, z) = rotate_yaw(x.into(), y.into(), z.into(), yaw);
     let (x, y, z) = rotate_pitch(x.into(), y.into(), z.into(), pitch);
-    let (x, y, _z) = rotate_roll(x.into(), y.into(), z.into(), roll);
+    let (x, y, z) = rotate_roll(x.into(), y.into(), z.into(), roll);
 
     // let idx_x = (((x + 1.0) / 2.2).round() + 9.0) as usize;
-    let idx_x = ((x / 2.0).round() + 9.0) as usize;
-    let idx_y = (y.round() + 19.0) as usize;
-    (idx_x, idx_y)
+    // println!("coords: {x},{y},{z}");
+    let ooz: f64 = 1.0 / (16.0 - z); 
+    // let ooz: f64 = 1.0;
+    // println!("ooz: {ooz}");
+    // println!("ooz*x: {}", ooz * x);
+    
+    
+
+
+    let idx_x = (x / 2.0 + 18.0).round() as usize;
+    let idx_y = (y + 96.0).round() as usize;
+    (idx_x, idx_y, ooz)
 }
 
 
