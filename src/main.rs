@@ -23,39 +23,19 @@ fn main() {
         let cube_size: i8 = 8;
         for x in -cube_size..=cube_size {
             for y in -cube_size..=cube_size {
-                
                 let z = cube_size;
-                let (x2, y2) = (x, y);
-
-                let (x, y, z) = rotate_yaw(x.into(), y.into(), z.into(), a);
-                let (x, y, z) = rotate_roll(x.into(), y.into(), z.into(), b);
-                let (x, y, z) = rotate_pitch(x.into(), y.into(), z.into(), c);
-
-                // println!("{x}, {y}");
-                // println!("{x1}, {y2}");
-
-                let idx_x = (((x + 1.0) / 2.2).round() + 9.0) as usize;
-                let idx_x = ((x / 2.0).round() + 9.0) as usize;
-                let idx_y = (y.round() + 19.0) as usize;
-                background[idx_x][idx_y] = '#';
                 
+                let (idx_x, idx_y) = rotate_axis(x, y, z, a, b, c);
+                background[idx_x][idx_y] = '#';
 
-                let z = -cube_size;
-
-                let (x, y, z) = rotate_yaw(x2.into(), y2.into(), z.into(), a);
-                let (x, y, z) = rotate_roll(x.into(), y.into(), z.into(), b);
-                let (x, y, z) = rotate_pitch(x.into(), y.into(), z.into(), c);
-
-                // println!("{x}, {y}");
-                // println!("{x1}, {y2}");
-
-                let idx_x = (((x + 1.0) / 2.2).round() + 9.0) as usize;
-                let idx_x = ((x / 2.0).round() + 9.0) as usize;
-                let idx_y = (y.round() + 19.0) as usize;
+                let (idx_x, idx_y) = rotate_axis(x, y, -z, a, b, c);
                 background[idx_x][idx_y] = '$';
+
+                let (idx_x, idx_y) = rotate_axis(z, y, -x, a, b, c);
+                background[idx_x][idx_y] = '~';
             }
         }
-        a += 0.05;
+        a += 0.03;
         b += 0.03;
         c += 0.02;
         print_cube(&background);
@@ -64,6 +44,19 @@ fn main() {
         clean_terminal(term_height);
     }
 }
+
+fn rotate_axis(x: i8, y: i8, z: i8, yaw: f64, pitch: f64, roll: f64) -> (usize, usize) {
+
+    let (x, y, z) = rotate_yaw(x.into(), y.into(), z.into(), yaw);
+    let (x, y, z) = rotate_pitch(x.into(), y.into(), z.into(), pitch);
+    let (x, y, _z) = rotate_roll(x.into(), y.into(), z.into(), roll);
+
+    // let idx_x = (((x + 1.0) / 2.2).round() + 9.0) as usize;
+    let idx_x = ((x / 2.0).round() + 9.0) as usize;
+    let idx_y = (y.round() + 19.0) as usize;
+    (idx_x, idx_y)
+}
+
 
 fn rotate_yaw(x: f64, y: f64, z: f64, angle: f64) -> (f64, f64, f64) {
     let new_x = x * angle.cos() - y * angle.sin(); 
