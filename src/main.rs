@@ -33,9 +33,10 @@ fn main() {
 
     let mut cube = Cube::new(cube_size as i16);
     loop {
-        let angle_yaw: f64 = rand::thread_rng().gen_range(0.01..=0.10);
-        let angle_pitch: f64 = rand::thread_rng().gen_range(0.01..=0.10);
-        let angle_roll: f64 = rand::thread_rng().gen_range(0.01..=0.10);
+        let angle_yaw: f64 = rand::thread_rng().gen_range(0.05..=0.15);
+        let angle_pitch: f64 = rand::thread_rng().gen_range(0.05..=0.15);
+        let angle_roll: f64 = rand::thread_rng().gen_range(0.05..=0.15);
+
         let mut background: Vec<Vec<char>> = vec![vec![' '; background_size.1]; background_size.0];
         let mut z_buffer: Vec<Vec<f64>> = vec![vec![-1.0; background_size.1]; background_size.0];
 
@@ -57,7 +58,7 @@ fn main() {
             }
         }
         print_cube(&background);
-        thread::sleep(Duration::from_millis(80));
+        thread::sleep(Duration::from_millis(70));
 
         clean_background(background_size.0);
     }
