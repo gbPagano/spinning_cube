@@ -1,126 +1,103 @@
-use terminal_size::{Width, Height, terminal_size};
-use std::{process, thread};
-use std::time::Duration;
+mod cube;
 
+use std::time::Duration;
+use std::{process, thread};
+use terminal_size::{terminal_size, Height, Width};
+
+use cube::{Cube, Point};
 
 fn main() {
-    
-    let Some((Width(term_width), Height(mut term_height))) = terminal_size() else {
+    let Some((Width(term_width), Height(term_height))) = terminal_size() else {
         println!("unable to get terminal size");
         process::abort()
     };
-    assert!(term_height > 10, "terminal height too low, needs to be at least 10 chars");
-    assert!(term_width >= term_height, "terminal width must be at least equal to height");
-    // term_height -= 9;
-    // println!("{term_height}, {term_width}");
+    assert!(
+        term_height > 10,
+        "terminal height too low, needs to be at least 10 chars"
+    );
+    assert!(
+        term_width >= term_height,
+        "terminal width must be at least equal to height"
+    );
 
-    let mut a: f64 = 0.0;
-    let mut b: f64 = 0.0;
-    let mut c: f64 = 0.0;
-    // let a = 45.0_f64.to_radians();
+    let background_size = ((term_height - 9) as usize, term_width as usize);
+    let cube_size: f64 = background_size.0 as f64 * 2.0;
+    let vertical_offset = (background_size.0 / 2) as f64;
+    let horizontal_offset = (background_size.1 / 2) as f64 - cube_size * 4.0 / 5.0;
+
+    let angle_yaw: f64 = 0.05;
+    let angle_pitch: f64 = 0.05;
+    let angle_roll: f64 = 0.02;
+
+    let distance: f64 = 4.0;
+    let scale: f64 = 1.0;
+
+    let mut cube = Cube::new(cube_size as i16);
     loop {
-        let mut background: Vec<Vec<char>> = vec![vec![' '; term_width.into()]; term_height.into()];
-        let mut z_buffer: Vec<Vec<f64>> = vec![vec![-1000.0; term_width.into()]; term_height.into()];
-       
-        let cube_size: i8 = 40;
-        for x in -cube_size..=cube_size {
-            for y in -cube_size..=cube_size {
-                let z = cube_size;
-                
-                let (idx_x, idx_y, new_z) = rotate_axis(x, y, z, a, b, c);
-                if idx_x < 36 && idx_y < 170 && z_buffer[idx_x][idx_y] <= new_z {
-                    z_buffer[idx_x][idx_y] = new_z;
-                    background[idx_x][idx_y] = '#';
-                }
-                let (idx_x, idx_y, new_z) = rotate_axis(-z, y, x, a, b, c);
-                if idx_x < 36 && idx_y < 170 && z_buffer[idx_x][idx_y] <= new_z {
-                    z_buffer[idx_x][idx_y] = new_z;
-                    background[idx_x][idx_y] = '$';
-                } 
-                let (idx_x, idx_y, new_z) = rotate_axis(z, y, -x, a, b, c);
-                if idx_x < 36 && idx_y < 170 && z_buffer[idx_x][idx_y] <= new_z {
-                    z_buffer[idx_x][idx_y] = new_z;
-                    background[idx_x][idx_y] = '~';
-                } 
-                let (idx_x, idx_y, new_z) = rotate_axis(-x, y, -z, a, b, c);
-                if idx_x < 36 && idx_y < 170 && z_buffer[idx_x][idx_y] <= new_z {
-                    z_buffer[idx_x][idx_y] = new_z;
-                    background[idx_x][idx_y] = ';';
-                } 
-                let (idx_x, idx_y, new_z) = rotate_axis(x, z, -y, a, b, c);
-                if idx_x < 36 && idx_y < 170 && z_buffer[idx_x][idx_y] <= new_z {
-                    z_buffer[idx_x][idx_y] = new_z;
-                    background[idx_x][idx_y] = '@';
-                }
-                let (idx_x, idx_y, new_z) = rotate_axis(x, -z, y, a, b, c);
-                if idx_x < 36 && idx_y < 170 && z_buffer[idx_x][idx_y] <= new_z {
-                    z_buffer[idx_x][idx_y] = new_z;
-                    background[idx_x][idx_y] = '+';
-                }
+        let mut background: Vec<Vec<char>> = vec![vec![' '; background_size.1]; background_size.0];
+        let mut z_buffer: Vec<Vec<f64>> = vec![vec![-1.0; background_size.1]; background_size.0];
+
+        for point in &mut cube.points {
+            rotate_axis(point, angle_yaw, angle_pitch, angle_roll);
+
+            let mut z_depth: f64 = 1.0 / (distance - (point.z / cube_size));
+            z_depth *= scale;
+
+            let idx_x = ((z_depth * point.x).round() / 2.5 + vertical_offset) as usize;
+            let idx_y = ((z_depth * point.y).round() + horizontal_offset) as usize;
+
+            if idx_x < background_size.0
+                && idx_y < background_size.1
+                && z_buffer[idx_x][idx_y] <= z_depth
+            {
+                z_buffer[idx_x][idx_y] = z_depth;
+                background[idx_x][idx_y] = point.mesh;
             }
         }
-        a += 0.05;
-        b += 0.05;
-        c += 0.01;
+
         print_cube(&background);
         thread::sleep(Duration::from_millis(80));
-    
-        clean_terminal(term_height);
+
+        clean_background(background_size.0);
     }
 }
 
-fn rotate_axis(x: i8, y: i8, z: i8, yaw: f64, pitch: f64, roll: f64) -> (usize, usize, f64) {
-
-    let (x, y, z) = rotate_yaw(x.into(), y.into(), z.into(), yaw);
-    let (x, y, z) = rotate_pitch(x.into(), y.into(), z.into(), pitch);
-    let (x, y, z) = rotate_roll(x.into(), y.into(), z.into(), roll);
-
-    // let idx_x = (((x + 1.0) / 2.2).round() + 9.0) as usize;
-    // println!("coords: {x},{y},{z}");
-    let distance: f64 = 150.0;
-    let cube_size: f64 = 40.0;
-    // let ooz: f64 = (1.0 / (distance - (z / cube_size))) * cube_size;
-    // let distance: f64 = 150.0;
-    let ooz: f64 = (cube_size / (distance - z)) * 1.5; 
-
-    // let ooz: f64 = 0.5;
-    // println!("ooz: {ooz}");
-    // println!("ooz*x: {}", ooz * x);
-    
-    
-
-
-    let idx_x = ((ooz * x).round() / 2.0 + 18.0) as usize;
-    let idx_y = ((ooz * y).round() + 86.0) as usize;
-    (idx_x, idx_y, z)
+fn rotate_axis(point: &mut Point, yaw: f64, pitch: f64, roll: f64) {
+    rotate_yaw(point, yaw);
+    rotate_pitch(point, pitch);
+    rotate_roll(point, roll);
 }
 
+fn rotate_yaw(point: &mut Point, angle: f64) {
+    let new_x = point.x * angle.cos() - point.y * angle.sin();
+    let new_y = point.x * angle.sin() + point.y * angle.cos();
 
-fn rotate_yaw(x: f64, y: f64, z: f64, angle: f64) -> (f64, f64, f64) {
-    let new_x = x * angle.cos() - y * angle.sin(); 
-    let new_y = x * angle.sin() + y * angle.cos();
-    (new_x, new_y, z)
+    point.x = new_x;
+    point.y = new_y;
 }
 
-fn rotate_pitch(x: f64, y: f64, z: f64, angle: f64) -> (f64, f64, f64) {
-    let new_x = x * angle.cos() + z * angle.sin(); 
-    let new_z = z * angle.cos() - x * angle.sin();
-    (new_x, y, new_z)
+fn rotate_pitch(point: &mut Point, angle: f64) {
+    let new_x = point.x * angle.cos() + point.z * angle.sin();
+    let new_z = point.z * angle.cos() - point.x * angle.sin();
+
+    point.x = new_x;
+    point.z = new_z;
 }
 
-fn rotate_roll(x: f64, y: f64, z: f64, angle: f64) -> (f64, f64, f64) {    
-    let new_y = y * angle.cos() - z * angle.sin(); 
-    let new_z = y * angle.sin() + z * angle.cos();
-    (x, new_y, new_z)
+fn rotate_roll(point: &mut Point, angle: f64) {
+    let new_y = point.y * angle.cos() - point.z * angle.sin();
+    let new_z = point.y * angle.sin() + point.z * angle.cos();
+
+    point.y = new_y;
+    point.z = new_z;
 }
 
-fn clean_terminal(height: u16) {
-    for _ in 0..height { 
+fn clean_background(height: usize) {
+    for _ in 0..height {
         // moves the cursor up and clears the line
         print!("\x1B[A\x1B[K");
     }
 }
-
 
 fn print_cube(matrix: &Vec<Vec<char>>) {
     for row in matrix {
@@ -130,4 +107,3 @@ fn print_cube(matrix: &Vec<Vec<char>>) {
         println!();
     }
 }
-
