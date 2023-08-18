@@ -3,6 +3,7 @@ mod cube;
 use std::time::Duration;
 use std::{process, thread};
 use terminal_size::{terminal_size, Height, Width};
+use rand::Rng;
 
 use cube::{Cube, Point};
 
@@ -25,15 +26,16 @@ fn main() {
     let vertical_offset = (background_size.0 / 2) as f64;
     let horizontal_offset = (background_size.1 / 2) as f64 - cube_size * 4.0 / 5.0;
 
-    let angle_yaw: f64 = 0.05;
-    let angle_pitch: f64 = 0.05;
-    let angle_roll: f64 = 0.02;
+    
 
-    let distance: f64 = 4.0;
-    let scale: f64 = 1.0;
+    let distance: f64 = 8.0;
+    let scale: f64 = 2.0;
 
     let mut cube = Cube::new(cube_size as i16);
     loop {
+        let angle_yaw: f64 = rand::thread_rng().gen_range(0.01..=0.10);
+        let angle_pitch: f64 = rand::thread_rng().gen_range(0.01..=0.10);
+        let angle_roll: f64 = rand::thread_rng().gen_range(0.01..=0.10);
         let mut background: Vec<Vec<char>> = vec![vec![' '; background_size.1]; background_size.0];
         let mut z_buffer: Vec<Vec<f64>> = vec![vec![-1.0; background_size.1]; background_size.0];
 
@@ -43,7 +45,7 @@ fn main() {
             let mut z_depth: f64 = 1.0 / (distance - (point.z / cube_size));
             z_depth *= scale;
 
-            let idx_x = ((z_depth * point.x).round() / 2.5 + vertical_offset) as usize;
+            let idx_x = ((z_depth * point.x).round() / 2.4 + vertical_offset) as usize;
             let idx_y = ((z_depth * point.y).round() + horizontal_offset) as usize;
 
             if idx_x < background_size.0
@@ -54,7 +56,6 @@ fn main() {
                 background[idx_x][idx_y] = point.mesh;
             }
         }
-
         print_cube(&background);
         thread::sleep(Duration::from_millis(80));
 
