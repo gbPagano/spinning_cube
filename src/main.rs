@@ -29,9 +29,9 @@ fn main() {
     
 
     let distance: f64 = 8.0;
-    let scale: f64 = 2.0;
+    let scale: i16 = 2;
 
-    let mut cube = Cube::new(cube_size as i16);
+    let mut cube = Cube::new(cube_size as i16 * scale);
     loop {
         let angle_yaw: f64 = rand::thread_rng().gen_range(0.05..=0.15);
         let angle_pitch: f64 = rand::thread_rng().gen_range(0.05..=0.15);
@@ -43,8 +43,7 @@ fn main() {
         for point in &mut cube.points {
             rotate_axis(point, angle_yaw, angle_pitch, angle_roll);
 
-            let mut z_depth: f64 = 1.0 / (distance - (point.z / cube_size));
-            z_depth *= scale;
+            let z_depth: f64 = 1.0 / (distance - (point.z / cube_size));
 
             let idx_x = ((z_depth * point.x).round() / 2.4 + vertical_offset) as usize;
             let idx_y = ((z_depth * point.y).round() + horizontal_offset) as usize;
