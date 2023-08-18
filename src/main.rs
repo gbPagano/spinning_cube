@@ -24,7 +24,7 @@ fn main() {
     let background_size = ((term_height - 9) as usize, term_width as usize);
     let cube_size: f64 = background_size.0 as f64 * 2.0;
     let vertical_offset = (background_size.0 / 2) as f64;
-    let horizontal_offset = (background_size.1 / 2) as f64 - cube_size * 4.0 / 5.0;
+    let horizontal_offset = (background_size.1 / 2) as f64;
 
     
 
