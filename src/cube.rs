@@ -25,7 +25,7 @@ impl Cube {
                     x: (-z).into(),
                     y: y.into(),
                     z: x.into(),
-                    mesh: '$',
+                    mesh: '+',
                 });
                 points.push(Point {
                     x: z.into(),
@@ -43,13 +43,13 @@ impl Cube {
                     x: x.into(),
                     y: z.into(),
                     z: (-y).into(),
-                    mesh: '@',
+                    mesh: '$',
                 });
                 points.push(Point {
                     x: x.into(),
                     y: (-z).into(),
                     z: y.into(),
-                    mesh: '+',
+                    mesh: '@',
                 });
             }
         }
