@@ -1,9 +1,9 @@
 mod cube;
 
+use rand::Rng;
 use std::time::Duration;
 use std::{process, thread};
 use terminal_size::{terminal_size, Height, Width};
-use rand::Rng;
 
 use cube::{Cube, Point};
 
@@ -12,21 +12,13 @@ fn main() {
         println!("unable to get terminal size");
         process::abort()
     };
-    assert!(
-        term_height > 10,
-        "terminal height too low, needs to be at least 10 chars"
-    );
-    assert!(
-        term_width >= term_height,
-        "terminal width must be at least equal to height"
-    );
+    assert!(term_height >= 20, "terminal is too small");
+    assert!(term_width >= term_height, "terminal is too small");
 
     let background_size = ((term_height - 9) as usize, term_width as usize);
     let cube_size: f64 = background_size.0 as f64 * 2.0;
     let vertical_offset = (background_size.0 / 2) as f64;
     let horizontal_offset = (background_size.1 / 2) as f64;
-
-    
 
     let distance: f64 = 8.0;
     let scale: i16 = 2;
@@ -57,7 +49,7 @@ fn main() {
             }
         }
         print_cube(&background);
-        thread::sleep(Duration::from_millis(70));
+        thread::sleep(Duration::from_millis(4000 / cube_size as u64));
 
         clean_background(background_size.0);
     }
