@@ -4,10 +4,21 @@ use rand::Rng;
 use std::time::Duration;
 use std::{process, thread};
 use terminal_size::{terminal_size, Height, Width};
+use clap::Parser;
 
 use cube::{Cube, Point};
 
+/// Perspective projection of a rotating cube, using only ascii codes
+#[derive(Parser)]
+#[command(author, version, about, long_about = None)]
+struct Args {
+    ///  Camera distance, for a cube perspective
+    #[arg(short, long, default_value_t = 9.0)]
+    distance: f64,
+}
+
 fn main() {
+    let args = Args::parse();
     let Some((Width(term_width), Height(term_height))) = terminal_size() else {
         println!("unable to get terminal size");
         process::abort()
@@ -15,7 +26,7 @@ fn main() {
     assert!(term_height >= 20, "terminal is too small");
     assert!(term_width >= term_height, "terminal is too small");
 
-    let distance: f64 = 9.0;
+    let distance: f64 = args.distance;
     let scale: f64 = distance / 3.0;
 
     let background_size = ((term_height - 9) as usize, term_width as usize);
