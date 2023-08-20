@@ -49,7 +49,7 @@ fn main() {
             }
         }
         print_cube(&background);
-        thread::sleep(Duration::from_millis(4000 / cube_size as u64));
+        thread::sleep(Duration::from_millis(5000 / cube_size as u64));
 
         clean_background(background_size.0);
     }
