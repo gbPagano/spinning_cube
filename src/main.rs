@@ -15,15 +15,15 @@ fn main() {
     assert!(term_height >= 20, "terminal is too small");
     assert!(term_width >= term_height, "terminal is too small");
 
+    let distance: f64 = 9.0;
+    let scale: f64 = distance / 3.0;
+
     let background_size = ((term_height - 9) as usize, term_width as usize);
-    let cube_size: f64 = background_size.0 as f64 * 2.0;
+    let cube_size: f64 = background_size.0 as f64 * 2.0 * scale;
     let vertical_offset = (background_size.0 / 2) as f64;
     let horizontal_offset = (background_size.1 / 2) as f64;
 
-    let distance: f64 = 8.0;
-    let scale: i16 = 2;
-
-    let mut cube = Cube::new(cube_size as i16 * scale);
+    let mut cube = Cube::new(cube_size as i16);
     loop {
         let angle_yaw: f64 = rand::thread_rng().gen_range(0.05..=0.15);
         let angle_pitch: f64 = rand::thread_rng().gen_range(0.05..=0.15);
@@ -49,7 +49,7 @@ fn main() {
             }
         }
         print_cube(&background);
-        thread::sleep(Duration::from_millis(5000 / cube_size as u64));
+        thread::sleep(Duration::from_millis((1000.0 * (distance + scale) / cube_size) as u64));
 
         clean_background(background_size.0);
     }
