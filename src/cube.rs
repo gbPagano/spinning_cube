@@ -31,13 +31,13 @@ impl Cube {
                     x: z.into(),
                     y: y.into(),
                     z: (-x).into(),
-                    mesh: '~',
+                    mesh: '%',
                 });
                 points.push(Point {
                     x: (-x).into(),
                     y: y.into(),
                     z: (-z).into(),
-                    mesh: ';',
+                    mesh: '*',
                 });
                 points.push(Point {
                     x: x.into(),
