@@ -13,7 +13,7 @@ use cube::{Cube, Point};
 #[command(author, version, about, long_about = None)]
 struct Args {
     ///  Camera distance, for a cube perspective
-    #[arg(short, long, default_value_t = 9.0)]
+    #[arg(short, long, default_value_t = 11.0)]
     distance: f64,
 }
 
