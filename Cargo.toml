@@ -3,6 +3,8 @@ name = "spinning_cube"
 version = "0.1.0"
 edition = "2021"
 authors = ["Guilherme Pagano <guilhermebpagano@gmail.com>"]
+description = "Perspective projection of a spinning cube, using only ascii codes"
+license = "MIT"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
