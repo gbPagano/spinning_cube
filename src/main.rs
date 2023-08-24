@@ -1,5 +1,6 @@
 mod cube;
 
+use colored::*;
 use rand::Rng;
 use std::time::Duration;
 use std::{process, thread};
@@ -15,6 +16,9 @@ struct Args {
     ///  Camera distance, for a cube perspective
     #[arg(short, long, default_value_t = 11.0)]
     distance: f64,
+    ///  Print the cube with colors
+    #[arg(short, long)]
+    colorful: bool,
 }
 
 fn main() {
@@ -25,7 +29,8 @@ fn main() {
     };
     assert!(term_height >= 20, "terminal is too small");
     assert!(term_width >= term_height, "terminal is too small");
-
+    
+    let colorful: bool = args.colorful;
     let distance: f64 = args.distance;
     let scale: f64 = distance / 3.0;
 
@@ -39,6 +44,7 @@ fn main() {
         let angle_yaw: f64 = rand::thread_rng().gen_range(0.05..=0.15);
         let angle_pitch: f64 = rand::thread_rng().gen_range(0.05..=0.15);
         let angle_roll: f64 = rand::thread_rng().gen_range(0.05..=0.15);
+        
 
         let mut background: Vec<Vec<char>> = vec![vec![' '; background_size.1]; background_size.0];
         let mut z_buffer: Vec<Vec<f64>> = vec![vec![-1.0; background_size.1]; background_size.0];
@@ -59,7 +65,11 @@ fn main() {
                 background[idx_x][idx_y] = point.mesh;
             }
         }
-        print_cube(&background);
+        if colorful {
+            print_colorful_cube(&background);
+        } else {
+            print_cube(&background);
+        }
         thread::sleep(Duration::from_millis((1000.0 * (distance + scale) / cube_size) as u64));
 
         clean_background(background_size.0);
@@ -107,6 +117,24 @@ fn print_cube(matrix: &Vec<Vec<char>>) {
     for row in matrix {
         for val in row {
             print!("{}", val);
+        }
+        println!();
+    }
+}
+
+fn print_colorful_cube(matrix: &Vec<Vec<char>>) {
+    for row in matrix {
+        for val in row {
+            let color = match val {
+                '#' => Color::Magenta,
+                '+' => Color::Green,
+                '%' => Color::Blue,
+                '*' => Color::Red,
+                '$' => Color::Cyan,
+                '@' => Color::Yellow,
+                _ => Color::TrueColor { r: 220, g: 150, b: 180 },
+            };
+            print!("{}", val.to_string().color(color));
         }
         println!();
     }

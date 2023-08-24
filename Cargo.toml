@@ -10,5 +10,6 @@ license = "MIT"
 
 [dependencies]
 clap = { version = "4.3.23", features = ["derive"] }
+colored = "2.0.4"
 rand = "0.8.5"
 terminal_size = "0.2.6"
