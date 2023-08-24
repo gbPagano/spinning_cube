@@ -126,12 +126,12 @@ fn print_colorful_cube(matrix: &Vec<Vec<char>>) {
     for row in matrix {
         for val in row {
             let color = match val {
-                '#' => Color::Magenta,
-                '+' => Color::Green,
-                '%' => Color::Blue,
-                '*' => Color::Red,
-                '$' => Color::Cyan,
-                '@' => Color::Yellow,
+                '#' => Color::Red,
+                '+' => Color::Blue,
+                '%' => Color::Green,
+                '*' => Color::Magenta,
+                '$' => Color::Yellow,
+                '@' => Color::White,
                 _ => Color::TrueColor { r: 220, g: 150, b: 180 },
             };
             print!("{}", val.to_string().color(color));
