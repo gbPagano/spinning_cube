@@ -1,6 +1,6 @@
 # Spinning Cube
 
-Perspective projection of a spinning cube, using using just ASCII characters.
+Perspective projection of a spinning cube, using just ASCII characters.
 
 ---
 
