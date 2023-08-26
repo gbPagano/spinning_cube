@@ -3,7 +3,7 @@ name = "spinning_cube"
 version = "0.1.0"
 edition = "2021"
 authors = ["Guilherme Pagano <guilhermebpagano@gmail.com>"]
-description = "Perspective projection of a spinning cube, using only ascii codes"
+description = "Perspective projection of a spinning cube, using just ASCII characters."
 license = "MIT"
 repository = "https://github.com/gbPagano/spinning_cube"
 
