@@ -4,7 +4,7 @@ Perspective projection of a spinning cube, using using just ASCII characters.
 
 ---
 
-video
+[video](https://github.com/gbPagano/spinning_cube/assets/103840130/36422f8a-17d9-4251-9cc8-3cd03a4c5f7b)
 
 ## Instalation
 
