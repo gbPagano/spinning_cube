@@ -1,6 +1,6 @@
 [package]
 name = "spinning_cube"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 authors = ["Guilherme Pagano <guilhermebpagano@gmail.com>"]
 description = "Perspective projection of a spinning cube, using just ASCII characters."
