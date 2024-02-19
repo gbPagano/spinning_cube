@@ -1,6 +1,6 @@
 [package]
 name = "spinning_cube"
-version = "0.1.2"
+version = "0.1.3"
 edition = "2021"
 authors = ["Guilherme Pagano <guilhermebpagano@gmail.com>"]
 description = "Perspective projection of a spinning cube, using just ASCII characters."
@@ -14,5 +14,6 @@ keywords = ["terminal", "cli", "projection", "cube"]
 [dependencies]
 clap = { version = "4.3.23", features = ["derive"] }
 colored = "2.0.4"
+ctrlc = "3.4.2"
 rand = "0.8.5"
 terminal_size = "0.2.6"

@@ -1,11 +1,11 @@
 mod cube;
 
+use clap::Parser;
 use colored::*;
 use rand::Rng;
 use std::time::Duration;
 use std::{process, thread};
 use terminal_size::{terminal_size, Height, Width};
-use clap::Parser;
 
 use cube::{Cube, Point};
 
@@ -29,7 +29,7 @@ fn main() {
     };
     assert!(term_height >= 20, "terminal is too small");
     assert!(term_width >= term_height, "terminal is too small");
-    
+
     let colorful: bool = args.colorful;
     let distance: f64 = args.distance;
     let scale: f64 = distance / 3.0;
@@ -39,12 +39,18 @@ fn main() {
     let vertical_offset = (background_size.0 / 2) as f64;
     let horizontal_offset = (background_size.1 / 2) as f64;
 
+    println!("\x1b[?25l"); // disable the cursor in the terminal
+    ctrlc::set_handler(move || {
+        println!("\x1b[?25h"); // enable the cursor in the terminal
+        std::process::exit(0);
+    })
+    .unwrap();
+
     let mut cube = Cube::new(cube_size as i16);
     loop {
         let angle_yaw: f64 = rand::thread_rng().gen_range(0.05..=0.15);
         let angle_pitch: f64 = rand::thread_rng().gen_range(0.05..=0.15);
         let angle_roll: f64 = rand::thread_rng().gen_range(0.05..=0.15);
-        
 
         let mut background: Vec<Vec<char>> = vec![vec![' '; background_size.1]; background_size.0];
         let mut z_buffer: Vec<Vec<f64>> = vec![vec![-1.0; background_size.1]; background_size.0];
@@ -70,7 +76,9 @@ fn main() {
         } else {
             print_cube(&background);
         }
-        thread::sleep(Duration::from_millis((1000.0 * (distance + scale) / cube_size) as u64));
+        thread::sleep(Duration::from_millis(
+            (1000.0 * (distance + scale) / cube_size) as u64,
+        ));
 
         clean_background(background_size.0);
     }
@@ -132,7 +140,11 @@ fn print_colorful_cube(matrix: &Vec<Vec<char>>) {
                 '*' => Color::Magenta,
                 '$' => Color::Yellow,
                 '@' => Color::White,
-                _ => Color::TrueColor { r: 220, g: 150, b: 180 },
+                _ => Color::TrueColor {
+                    r: 220,
+                    g: 150,
+                    b: 180,
+                },
             };
             print!("{}", val.to_string().color(color));
         }
